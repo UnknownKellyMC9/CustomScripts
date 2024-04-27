@@ -2,7 +2,15 @@ local GUILibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Un
 
 local Players = game:GetService('Players')
 local Building = false
-local Version_GUI = "1.0"
+local Development = true
+
+if Development then
+   game:GetService("StarterGui"):SetCore("SendNotification", {
+       Title = "Development In Progress";
+       Text = "This script is in development, you can cause the bugs easily";
+       Duration = 35
+   })
+end
 
 local RunLoops = {RenderStepTable = {}, StepTable = {}, HeartTable = {}}
 
@@ -75,7 +83,7 @@ local Tabs = {
 
 local Sections = {
     ["Settings"] = Tabs["Main"].NewSection("Settings"), 
-    ["GUI"] = Tabs["Details"].NewSection(Version_GUI)
+    ["GUI"] = Tabs["Details"].NewSection("Details")
 }
 
 runcode(function()
@@ -112,12 +120,12 @@ runcode(function()
         ["Function"] = function(call)
             HitboxExpansion["Enabled"] = call do
                 if not Executed then
-	               game:GetService("StarterGui"):SetCore("SendNotification", {
-	                     Title = "Recommended";
-                             Text = "Adjust the transparency to make hitbox visible or invisible.";
-		             Duration = 15
-		       })
-		end
+	                game:GetService("StarterGui"):SetCore("SendNotification", {
+	                    Title = "Recommended";
+					    Text = "Adjust the Hitbox Transparency to make hitbox visible or invisible.";
+					    Duration = 25
+					})
+			    end
                 Executed = true
             end
         end,
