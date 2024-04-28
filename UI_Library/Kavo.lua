@@ -983,6 +983,7 @@ function GuiLibrary:CreateWindow(argstable)
 				local callback = argstable["Function"]
 				local TogFunction = {}
 				local toggled = false
+                local toggleCooldown = false
 				table.insert(SettingsT, tname)
 
 				local toggleElement = Instance.new("TextButton")
@@ -1098,10 +1099,19 @@ function GuiLibrary:CreateWindow(argstable)
 
 				updateSectionFrame()
 				UpdateSize()
+				
+                local function delay(seconds, callback)
+				    local startTime = os.clock()
+				    while os.clock() - startTime < seconds do
+				        wait()
+				    end
+				    callback()
+				end
 
 				btn.MouseButton1Click:Connect(function()
-					if not focusing then
+					if not focusing and not toggleCooldown then
 						if toggled == false then
+                            toggleCooldown = true
 							game.TweenService:Create(img, TweenInfo.new(0.11, Enum.EasingStyle.Linear,Enum.EasingDirection.In), {
 								ImageTransparency = 0
 							}):Play()
@@ -1144,6 +1154,11 @@ function GuiLibrary:CreateWindow(argstable)
 						end
 						toggled = not toggled
 						pcall(callback, toggled)
+					  
+					      -- Reset cooldown after a short delay
+						delay(0.2, function()
+					        toggleCooldown = false
+					    end)
 					else
 						for i,v in next, infoContainer:GetChildren() do
 							Utility:TweenObject(v, {Position = UDim2.new(0,0,2,0)}, 0.2)
