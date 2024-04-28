@@ -9,39 +9,39 @@ local run = game:GetService("RunService")
 local Utility = {}
 local Objects = {}
 function GuiLibrary:DraggingEnabled(frame, parent)
+    parent = parent or frame
 
-	parent = parent or frame
+    -- stolen from wally or kiriot, kek
+    local dragging = false
+    local dragInput, mousePos, framePos
 
-	-- stolen from wally or kiriot, kek
-	local dragging = false
-	local dragInput, mousePos, framePos
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            mousePos = input.Position
+            framePos = parent.Position
 
-	frame.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			mousePos = input.Position
-			framePos = parent.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
 
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false
-				end
-			end)
-		end
-	end)
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
 
-	frame.InputChanged:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-			dragInput = input
-		end
-	end)
-
-	input.InputChanged:Connect(function(input)
-		if input == dragInput and dragging then
-			local delta = input.Position - mousePos
-			parent.Position  = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
-		end
-	end)
+    input.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - mousePos
+            parent.Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
+            input.Cancelled = true
+        end
+    end)
 end
 
 function Utility:TweenObject(obj, properties, duration, ...)
@@ -188,6 +188,8 @@ function GuiLibrary:CreateWindow(argstable)
 
 	themeList = themeList or {}
 	local selectedTab 
+	local CloseEvent = Instance.new("BindableEvent")
+    GuiLibrary.CloseEvent = CloseEvent
 	kavName = kavName or "Library"
 	table.insert(GuiLibrary, kavName)
 	for i,v in pairs(game.CoreGui:GetChildren()) do
@@ -282,16 +284,17 @@ function GuiLibrary:CreateWindow(argstable)
 	close.ImageRectOffset = Vector2.new(284, 4)
 	close.ImageRectSize = Vector2.new(24, 24)
 	close.MouseButton1Click:Connect(function()
-		game.TweenService:Create(close, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
-			ImageTransparency = 1
-		}):Play()
-		wait()
-		game.TweenService:Create(Main, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-			Size = UDim2.new(0,0,0,0),
-			Position = UDim2.new(0, Main.AbsolutePosition.X + (Main.AbsoluteSize.X / 2), 0, Main.AbsolutePosition.Y + (Main.AbsoluteSize.Y / 2))
-		}):Play()
-		wait(1)
-		ScreenGui:Destroy()
+	    game.TweenService:Create(close, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+	        ImageTransparency = 1
+	    }):Play()
+	    wait()
+	    game.TweenService:Create(Main, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+	        Size = UDim2.new(0,0,0,0),
+	        Position = UDim2.new(0, Main.AbsolutePosition.X + (Main.AbsoluteSize.X / 2), 0, Main.AbsolutePosition.Y + (Main.AbsoluteSize.Y / 2))
+	    }):Play()
+	    wait(1)
+	    CloseEvent:Fire()
+	    ScreenGui:Destroy()
 	end)
 
 	MainSide.Name = "MainSide"
