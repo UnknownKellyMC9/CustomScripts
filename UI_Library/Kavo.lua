@@ -9,8 +9,9 @@ local run = game:GetService("RunService")
 local Utility = {}
 local Objects = {}
 function GuiLibrary:DraggingEnabled(frame, parent)
+        
     parent = parent or frame
-
+    
     -- stolen from wally or kiriot, kek
     local dragging = false
     local dragInput, mousePos, framePos
@@ -20,7 +21,7 @@ function GuiLibrary:DraggingEnabled(frame, parent)
             dragging = true
             mousePos = input.Position
             framePos = parent.Position
-
+            
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
@@ -38,11 +39,11 @@ function GuiLibrary:DraggingEnabled(frame, parent)
     input.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
             local delta = input.Position - mousePos
-            parent.Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
-            input.Cancelled = true
+            parent.Position  = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
         end
     end)
 end
+
 
 function Utility:TweenObject(obj, properties, duration, ...)
 	tween:Create(obj, tweeninfo(duration, ...), properties):Play()
