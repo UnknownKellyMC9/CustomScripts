@@ -1243,7 +1243,7 @@ function GuiLibrary:CreateWindow(argstable)
 			end
 
 			function Elements.AddSlider(argstable)
-				local slidInf = argstable["Name"] ot slidInf
+				local slidInf = argstable["Name"] or slidInf
 				local slidTip = argstable["InfoText"] or ""
 				local minvalue = argstable["Min"]
 				local maxvalue = argstable["Max"]
