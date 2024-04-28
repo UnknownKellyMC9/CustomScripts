@@ -150,8 +150,9 @@ function GuiLibrary:ToggleWindow()
 end
 
 function GuiLibrary:CreateWindow(argstable)
-	local kavName = argstable["Title"]
-	local themeList = argstable["Theme"]
+	local kavName = argstable["Title"] or kavName
+	local themeList = argstable["Theme"] or themeList
+	
 	if not themeList then
 		themeList = themes
 	end
@@ -376,7 +377,7 @@ function GuiLibrary:CreateWindow(argstable)
 
 	local first = true
 
-	function Tabs.NewTab(tabName)
+	function Tabs.AddTab(tabName)
 		tabName = tabName or "Tab"
 		local tabButton = Instance.new("TextButton")
 		local UICorner = Instance.new("UICorner")
@@ -476,7 +477,7 @@ function GuiLibrary:CreateWindow(argstable)
 			end
 		end)()
 
-		function Sections.NewSection(secName, hidden)
+		function Sections.AddSection(secName, hidden)
 			secName = secName or "Section"
 			local sectionFunctions = {}
 			local modules = {}
@@ -580,8 +581,8 @@ function GuiLibrary:CreateWindow(argstable)
 			updateSectionFrame()
 			UpdateSize()
 			local Elements = {}
-			function Elements.NewButton(argstable)
-				local bname = argstable["Name"]
+			function Elements.AddButton(argstable)
+				local bname = argstable["Name"] or bname
 				local tipINf = argstable["InfoText"] or ""
 				local callback = argstable["Function"]
 				showLogo = showLogo or true
@@ -781,8 +782,8 @@ function GuiLibrary:CreateWindow(argstable)
 				return ButtonFunction
 			end
 
-			function Elements.NewTextBox(argstable)
-				local tname = argstable["Name"]
+			function Elements.AddTextBox(argstable)
+				local tname = argstable["Name"] or tname
 				local tTip = argstable["InfoText"] or ""
 				local callback = argstable["Function"]
 				local textboxElement = Instance.new("TextButton")
@@ -977,8 +978,8 @@ function GuiLibrary:CreateWindow(argstable)
 				end)()
 			end 
 
-			function Elements.NewToggle(argstable)
-				local tname = argstable["Name"]
+			function Elements.AddToggle(argstable)
+				local tname = argstable["Name"] or tname
 				local nTip = argstable["InfoText"] or ""
 				local callback = argstable["Function"]
 				local TogFunction = {}
@@ -1241,8 +1242,8 @@ function GuiLibrary:CreateWindow(argstable)
 				return TogFunction
 			end
 
-			function Elements.NewSlider(argstable)
-				local slidInf = argstable["Name"]
+			function Elements.AddSlider(argstable)
+				local slidInf = argstable["Name"] ot slidInf
 				local slidTip = argstable["InfoText"] or ""
 				local minvalue = argstable["Min"]
 				local maxvalue = argstable["Max"]
@@ -1485,8 +1486,8 @@ function GuiLibrary:CreateWindow(argstable)
 				end)        
 			end
 
-			function Elements.NewDropdown(argstable)
-				local dropname = argstable["Name"]
+			function Elements.AddDropdown(argstable)
+				local dropname = argstable["Name"] or dropname
 				local dropinf = argstable["InfoText"] or ""
 				local list = argstable["List"]
 				local callback = argstable["Function"]
@@ -1933,8 +1934,8 @@ function GuiLibrary:CreateWindow(argstable)
 				end
 				return DropFunction
 			end
-			function Elements.NewKeybind(argstable)
-				local keytext = argstable["Name"]
+			function Elements.AddKeybind(argstable)
+				local keytext = argstable["Name"] or keytext
 				local keyinf = argstable["InfoText"] or ""
 				local first = argstable["Keybind"]
 				local callback = argstable["Function"]
@@ -2147,8 +2148,8 @@ function GuiLibrary:CreateWindow(argstable)
 				end)()
 			end
 
-			function Elements.NewColorPicker(argstable)
-				local colText = argstable["Name"]
+			function Elements.AddColorPicker(argstable)
+				local colText = argstable["Name"] or colText
 				local colInf = argstable["InfoText"] or ""
 				local defcolor = argstable["Default"]
 				local callback = argstable["Function"]
@@ -2616,7 +2617,8 @@ function GuiLibrary:CreateWindow(argstable)
 				setcolor({h,s,v})
 			end
 
-			function Elements.NewLabel(argstable)
+			function Elements.AddLabel(argstable)
+			    local labelName;
 				local labelFunctions = {}
 				local label = Instance.new("TextLabel")
 				local UICorner = Instance.new("UICorner")
@@ -2625,7 +2627,7 @@ function GuiLibrary:CreateWindow(argstable)
 				label.BackgroundColor3 = themeList.SchemeColor
 				label.BorderSizePixel = 0
 				label.ClipsDescendants = true
-				label.Text = argstable["Text"]
+				label.Text = argstable["Text"] or labelName
 				label.Size = UDim2.new(0, 352, 0, 33)
 				label.Font = Enum.Font.Gotham
 				label.Text = "  "..title
