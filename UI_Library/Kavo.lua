@@ -147,7 +147,7 @@ function Kavo:ToggleUI()
     end
 end
 
-function Kavo.CreateLib(kavName, themeList)
+function Kavo.CreateLib(argstable)
     local kavName = argstable.Title and argstable["Title"] and kavName or "Kavo UI"
     local themeList = argstable.Theme and argstable["Theme"] and themeList or "Ocean"
     if not themeList then
