@@ -978,6 +978,7 @@ function Kavo.CreateLib(kavName, themeList)
                 function Elements:NewToggle(argstable)
                     local tname = argstable.Name and argstable["Name"] and tname or "Toggle"
                     local nTip = argstable.InfoText and argstable["InfoText"] and nTip or "Info of toggle."
+                    local defT = argstable.Default and argstable["Default"] and defT or nil
                     local callback = argstable.Function and argstable["Function"] and callback or function() print("Toggle is been executed to true or false") end
                     local TogFunction = {}
                     tname = tname or "Toggle"
@@ -1224,6 +1225,9 @@ function Kavo.CreateLib(kavName, themeList)
                             pcall(callback, toggled)
                         end
                     end
+                    spawn(function()
+                        TogFunction:UpdateToggle(nil, defT)
+                    end)
                     return TogFunction
             end
 
@@ -1234,7 +1238,10 @@ function Kavo.CreateLib(kavName, themeList)
                 local minvalue = argstable.Min and argstable["Min"] and minvalue or 16
                 local startVal = argstable.Default and argstable["Default"] and startVal or 0
                 local callback = argstable.Function and argstable["Function"] and callback or function() end
-
+                if startVal > maxvalue then
+                    startVal = maxvalue
+                end
+                
                 local sliderElement = Instance.new("TextButton")
                 local UICorner = Instance.new("UICorner")
                 local togName = Instance.new("TextLabel")
@@ -1309,8 +1316,7 @@ function Kavo.CreateLib(kavName, themeList)
                 sliderDrag.BackgroundColor3 = themeList.SchemeColor
                 sliderDrag.BorderColor3 = Color3.fromRGB(74, 99, 135)
                 sliderDrag.BorderSizePixel = 0
-                sliderDrag.Size = UDim2.new(-0.671140969, 100,1,0)
-
+                
                 UICorner_3.Parent = sliderDrag
 
                 write.Name = "write"
@@ -1367,6 +1373,11 @@ function Kavo.CreateLib(kavName, themeList)
 
                                 updateSectionFrame()
                 UpdateSize()
+                task.spawn(function()
+                    sliderDrag.Size = UDim2.new(0, math.clamp(startVal - minvalue, 0, 149), 0, 6)
+                    val.Text = startVal
+                    callback(startVal)
+                end)
                 local mouse = game:GetService("Players").LocalPlayer:GetMouse();
 
                 local ms = game.Players.LocalPlayer:GetMouse()
