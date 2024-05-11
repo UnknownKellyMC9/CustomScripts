@@ -1231,7 +1231,7 @@ function Kavo.CreateLib(argstable)
                     return TogFunction
             end
 
-            function Elements:NewSlider(slidInf, slidTip, maxvalue, minvalue, callback)
+            function Elements:NewSlider(slidInf, slidTip, maxvalue, minvalue, startVal, callback)
                 local slidInf = argstable.Name and argstable["Name"] and slidInf or "Slider"
                 local slidTip = argstable.InfoText and argstable["InfoText"] and slidTip or "Slider tip here"
                 local maxvalue = argstable.Max and argstable["Max"] and maxvalue or 500
