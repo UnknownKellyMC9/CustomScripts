@@ -1236,11 +1236,9 @@ function Kavo.CreateLib(argstable)
                 local slidTip = argstable.InfoText and argstable["InfoText"] and slidTip or "Slider tip here"
                 local maxvalue = argstable.Max and argstable["Max"] and maxvalue or 500
                 local minvalue = argstable.Min and argstable["Min"] and minvalue or 16
-                local startVal = argstable.Default and argstable["Default"] and startVal or 0
+                local startVal = argstable.Default and argstable["Default"] and startVal or (minvalue + ((maxvalue - minvalue) / 2))
                 local callback = argstable.Function and argstable["Function"] and callback or function() end
-                if startVal > maxvalue then
-                    startVal = maxvalue
-                end
+                
                 
                 local sliderElement = Instance.new("TextButton")
                 local UICorner = Instance.new("UICorner")
@@ -1369,15 +1367,14 @@ function Kavo.CreateLib(argstable)
                 if themeList.SchemeColor == Color3.fromRGB(0,0,0) then
                     Utility:TweenObject(moreInfo, {TextColor3 = Color3.fromRGB(255,255,255)}, 0.2)
                 end 
-
+                
+                sliderDrag.Size = UDim2.new(0, (startVal - minvalue) / (maxvalue - minvalue) * 149, 0, 6)
+                val.Text = startVal
+                callback(startVal)
 
                                 updateSectionFrame()
                 UpdateSize()
-                task.spawn(function()
-                    sliderDrag.Size = UDim2.new(0, math.clamp(startVal - minvalue, 0, 149), 0, 6)
-                    val.Text = startVal
-                    callback(startVal)
-                end)
+                
                 local mouse = game:GetService("Players").LocalPlayer:GetMouse();
 
                 local ms = game.Players.LocalPlayer:GetMouse()
