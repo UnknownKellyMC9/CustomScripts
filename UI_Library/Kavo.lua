@@ -783,7 +783,7 @@ function Kavo.CreateLib(argstable)
                 local tname = argstable.Name and argstable["Name"] and tname or "Textbox"
                 local tDef = argstable.Default and argstable["Default"] and tdef or nil
                 local tTip = argstable.InfoText and argstable["InfoText"] and tTip or "Info Text"
-                local callback = argstable.Function and argstable["Function"] and callback or function()
+                local callback = argstable.Function and argstable["Function"] and callback or function() print("Textbox focused") end
                 local textboxElement = Instance.new("TextButton")
                 local UICorner = Instance.new("UICorner")
                 local viewInfo = Instance.new("ImageButton")
