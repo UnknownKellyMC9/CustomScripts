@@ -779,10 +779,11 @@ function Kavo.CreateLib(argstable)
                 return ButtonFunction
             end
 
-            function Elements:NewTextBox(tname, tTip, callback)
-                tname = tname or "Textbox"
-                tTip = tTip or "Gets a value of Textbox"
-                callback = callback or function() end
+            function Elements:NewTextBox(argstable)
+                local tname = argstable.Name and argstable["Name"] and tname or "Textbox"
+                local tDef = argstable.Default and argstable["Default"] and tdef or nil
+                local tTip = argstable.InfoText and argstable["InfoText"] and tTip or "Info Text"
+                local callback = argstable.Function and argstable["Function"] and callback or function()
                 local textboxElement = Instance.new("TextButton")
                 local UICorner = Instance.new("UICorner")
                 local viewInfo = Instance.new("ImageButton")
@@ -920,7 +921,9 @@ function Kavo.CreateLib(argstable)
                         hovering = false
                     end
                 end)
-
+                TextBox.Text = tDef
+                
+                    callback(tDef)
                 TextBox.FocusLost:Connect(function(EnterPressed)
                     if focusing then
                         for i,v in next, infoContainer:GetChildren() do
@@ -1231,7 +1234,7 @@ function Kavo.CreateLib(argstable)
                     return TogFunction
             end
 
-            function Elements:NewSlider(slidInf, slidTip, maxvalue, minvalue, startVal, callback)
+            function Elements:NewSlider(argstable)
                 local slidInf = argstable.Name and argstable["Name"] and slidInf or "Slider"
                 local slidTip = argstable.InfoText and argstable["InfoText"] and slidTip or "Slider tip here"
                 local maxvalue = argstable.Max and argstable["Max"] and maxvalue or 500
@@ -1484,6 +1487,7 @@ function Kavo.CreateLib(argstable)
                 local dropname = argstable.Name and argstable["Name"] and dropname or "Dropdown"
                 local list = argstable.List and argstable["List"] and list or {}
                 local dropinf = argstable.InfoText and argstable["InfoText"] and dropinf or "Dropdown info"
+                local dropDef = argstable.Default and argstable["Default"] and dropDef or nil
                 local callback = argstable.Function and argstable["Function"] and callback or function() end   
 
                 local opened = false
@@ -1786,6 +1790,16 @@ function Kavo.CreateLib(argstable)
     
                     UICorner_2.CornerRadius = UDim.new(0, 4)
                     UICorner_2.Parent = optionSelect
+
+					if dropDef then
+					    for i,v in next, list do
+					        if v == dropDef then
+					            itemTextbox.Text = v
+					            callback(v)
+					            break
+					        end
+					    end
+					end
 
                     local oHover = false
                     optionSelect.MouseEnter:Connect(function()
