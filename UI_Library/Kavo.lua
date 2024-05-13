@@ -606,7 +606,7 @@ function Kavo:CreateWindow(argstable)
             function Elements:NewButton(argstable)
                 local bname = argstable["Name"] and argstable.Name and bname or "Button"
                 local tipINf = argstable["InfoText"] and argstable.InfoText and tipINf or "Information"
-                local callback = argstable["Function"] and argstable.Function and callback or function() end
+                local callback = argstable["Function"] and argstable.Function and callback or function() end)
      
                 local buttonElement = Instance.new("TextButton")
                 local UICorner = Instance.new("UICorner")
@@ -806,7 +806,7 @@ function Kavo:CreateWindow(argstable)
                 local tname = argstable["Name"] and argstable.Name and tname or "Textbox"
                 local tTip = argstable["InfoText"] and argstable.InfoText and tTip or "Information"
                 local textDefault = argstable["Default"] and argstable.Default and textDefault or nil
-                local callback = argstable["Function"] and argstable.Function and callback or function() end
+                local callback = argstable["Function"] and argstable.Function and callback or function() end)
                 
                 local textboxElement = Instance.new("TextButton")
                 local UICorner = Instance.new("UICorner")
@@ -1009,7 +1009,7 @@ function Kavo:CreateWindow(argstable)
                     local tname = argstable["Name"] and argstable.Name and tname or "Toggle"
                     local nTip = argstable["InfoText"] and argstable.InfoText and nTip or "Information"
                     local togDef = argstable["Default"] and argstable.Default and togDef or nil
-                    local callback = argstable["Function"] and argstable.Function and callback or function() end
+                    local callback = argstable["Function"] and argstable.Function and callback or function() end)
                     
                     local toggled = false
                     table.insert(SettingsT, tname)
@@ -1262,7 +1262,7 @@ function Kavo:CreateWindow(argstable)
                 local maxvalue = argstable["Max"] and argstable.Max and maxvalue or 100
                 local minvalue = argstable["Min"] and argstable.Min and minvalue or 10
                 local startVal = argstable["Default"] and argstable.Default and startVal or 0
-                local callback = argstable["Function"] and argstable.Function and callback or function() end
+                local callback = argstable["Function"] and argstable.Function and callback or function() end)
                 
 
                 local sliderElement = Instance.new("TextButton")
@@ -1520,7 +1520,7 @@ function Kavo:CreateWindow(argstable)
                 local list = argstable["List"] and argstable.List and list or nil
                 local dropinf = argstable["InfoText"] and argstable.InfoText and dropinf or "Information"
                 local dropDef = argstable["Default"] and argstable.Default and dropDef or nil
-                local callback = argstable["Function"] and argstable.Function and callback or function() end
+                local callback = argstable["Function"] and argstable.Function and callback or function() end)
                 
                 local opened = false
                 local DropYSize = 33
@@ -1983,7 +1983,7 @@ function Kavo:CreateWindow(argstable)
                 local keytext = argstable["Name"] and argstable.Name and keytext or "Keybind"
                 local keyinf = argstable["InfoText"] and argstable.InfoText and keyinf or "Information"
                 local first = argstable["Default"] and argstable.Default and first or nil
-                local callback = argstable["Function"] and argstable.Function and callback or function()
+                local callback = argstable["Function"] and argstable.Function and callback or function() end)
                 
                 local oldKey = first.Name
                 local keybindElement = Instance.new("TextButton")
@@ -2199,7 +2199,7 @@ function Kavo:CreateWindow(argstable)
                 local colText = argstable["Name"] and argstable.Name and colText or "Colorpicker"
                 local colInf = argstable["InfoText"] and argstable.InfoText and colInf or "Information"
                 local defcolor = argstable["Default"] and argstable.Default and defcolor or Color3.fromRGB(1,1,1)
-                local callback = argstable["Function"] and argstable.Function and callback or function() end
+                local callback = argstable["Function"] and argstable.Function and callback or function() end)
                 
                 local h, s, v = Color3.toHSV(defcolor)
                 local ms = game.Players.LocalPlayer:GetMouse()
