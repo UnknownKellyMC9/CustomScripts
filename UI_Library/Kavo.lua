@@ -974,8 +974,8 @@ function Kavo:CreateWindow(argstable)
                     end
                 end)()
             end 
-            -- im organize the code lol.
-                local function Elements:NewToggle(argstable)
+         
+                function Elements:NewToggle(argstable)
 				    local TogFunction = {}
 				    local tname = argstable["Name"] or "Toggle"
 				    local nTip = argstable["InfoText"] or "Information"
