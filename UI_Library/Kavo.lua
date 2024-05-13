@@ -7,20 +7,19 @@ local run = game:GetService("RunService")
 
 local Utility = {}
 local Objects = {}
-function Kavo:DraggingEnabled(frame, parent)
-        
+local function Kavo:DraggingEnabled(frame, parent)
     parent = parent or frame
-    
-    -- stolen from wally or kiriot, kek
+
     local dragging = false
     local dragInput, mousePos, framePos
 
+    -- Handle mouse input for PC
     frame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             mousePos = input.Position
             framePos = parent.Position
-            
+
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
@@ -30,15 +29,43 @@ function Kavo:DraggingEnabled(frame, parent)
     end)
 
     frame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
             dragInput = input
         end
     end)
 
+    -- Handle touch input for mobile
+    local touchInputService = game:GetService("TouchInputService")
+    local touchInput = touchInputService and touchInputService.TouchEnabled
+
+    if touchInput then
+        frame.TouchStarted:Connect(function(touch, processed)
+            if not processed then
+                dragging = true
+                mousePos = touch.Position
+                framePos = parent.Position
+
+                touch.Changed:Connect(function()
+                    if touch.State == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
+        end)
+
+        frame.TouchMoved:Connect(function(touch, processed)
+            if not processed then
+                local delta = touch.Position - mousePos
+                parent.Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
+            end
+        end)
+    end
+
+    -- Handle input changes for both mouse and touch
     input.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
             local delta = input.Position - mousePos
-            parent.Position  = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
+            parent.Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
         end
     end)
 end
@@ -147,9 +174,10 @@ function Kavo:ToggleUI()
     end
 end
 
-function Kavo.CreateLib(argstable)
-    local kavName = argstable.Title and argstable["Title"] and kavName or "Kavo UI"
-    local themeList = argstable.Theme and argstable["Theme"] and themeList or "Ocean"
+function Kavo:CreateWindow(kavName, themeList)
+    local kavName = argstable["Title"] and argstable.Title and kavName or "Kavo's Window"
+    local themeList = argstable["Theme"] and argstable.Theme and themeList or "Ocean"
+    
     if not themeList then
         themeList = themes
     end
@@ -576,15 +604,10 @@ function Kavo.CreateLib(argstable)
                 UpdateSize()
             local Elements = {}
             function Elements:NewButton(argstable)
-                local bname = argstable.Name and argstable["Name"] and bnane or "Button"
-                local tipINf = argstable.InfoText and argstable["InfoText"] and tipINf or "Info of button."
-                local callback = argstable.Function and argstable["Function"] and callback or function() print("button clicked") end
-                showLogo = showLogo or true
-                local ButtonFunction = {}
-                tipINf = tipINf or "Tip: Clicking this nothing will happen!"
-                bname = bname or "Click Me!"
-                callback = callback or function() end
-
+                local bname = argstable["Name"] and argstable.Name and bname or "Button"
+                local tipINf = argstable["InfoText"] and argstable.InfoText and tipINf or "Information"
+                local callback = argstable["Function"] and argstable.Function and callback or function() end
+     
                 local buttonElement = Instance.new("TextButton")
                 local UICorner = Instance.new("UICorner")
                 local btnInfo = Instance.new("TextLabel")
@@ -780,10 +803,11 @@ function Kavo.CreateLib(argstable)
             end
 
             function Elements:NewTextBox(argstable)
-                local tname = argstable.Name and argstable["Name"] and tname or "Textbox"
-                local tDef = argstable.Default and argstable["Default"] and tdef or nil
-                local tTip = argstable.InfoText and argstable["InfoText"] and tTip or "Info Text"
-                local callback = argstable.Function and argstable["Function"] and callback or function() print("Textbox focused") end
+                local tname = argstable["Name"] and argstable.Name and tname or "Textbox"
+                local tTip = argstable["InfoText"] and argstable.InfoText and tTip or "Information"
+                local textDefault = argstable["Default"] and argstable.Default and textDefault or nil
+                local callback = argstable["Function"] and argstable.Function and callback or function() end
+                
                 local textboxElement = Instance.new("TextButton")
                 local UICorner = Instance.new("UICorner")
                 local viewInfo = Instance.new("ImageButton")
@@ -893,7 +917,7 @@ function Kavo.CreateLib(argstable)
             
                 local btn = textboxElement
                 local infBtn = viewInfo
-
+                
                 btn.MouseButton1Click:Connect(function()
                     if focusing then
                         for i,v in next, infoContainer:GetChildren() do
@@ -921,9 +945,7 @@ function Kavo.CreateLib(argstable)
                         hovering = false
                     end
                 end)
-                TextBox.Text = tDef
-                
-                    callback(tDef)
+
                 TextBox.FocusLost:Connect(function(EnterPressed)
                     if focusing then
                         for i,v in next, infoContainer:GetChildren() do
@@ -940,7 +962,11 @@ function Kavo.CreateLib(argstable)
                         TextBox.Text = ""  
                     end
                 end)
-
+                
+                callback(textDefault)
+                wait(0.18)
+                TextBox.Text = textDefault
+                
                 viewInfo.MouseButton1Click:Connect(function()
                     if not viewDe then
                         viewDe = true
@@ -979,14 +1005,12 @@ function Kavo.CreateLib(argstable)
             end 
 
                 function Elements:NewToggle(argstable)
-                    local tname = argstable.Name and argstable["Name"] and tname or "Toggle"
-                    local nTip = argstable.InfoText and argstable["InfoText"] and nTip or "Info of toggle."
-                    local defT = argstable.Default and argstable["Default"] and defT or nil
-                    local callback = argstable.Function and argstable["Function"] and callback or function() print("Toggle is been executed to true or false") end
                     local TogFunction = {}
-                    tname = tname or "Toggle"
-                    nTip = nTip or "Prints Current Toggle State"
-                    callback = callback or function() end
+                    local tname = argstable["Name"] and argstable.Name and tname or "Toggle"
+                    local nTip = argstable["InfoText"] and argstable.InfoText and nTip or "Information"
+                    local togDef = argstable["Default"] and argstable.Default and togDef or nil
+                    local callback = argstable["Function"] and argstable.Function and callback or function() end
+                    
                     local toggled = false
                     table.insert(SettingsT, tname)
 
@@ -1228,21 +1252,19 @@ function Kavo.CreateLib(argstable)
                             pcall(callback, toggled)
                         end
                     end
-                    spawn(function()
-                        TogFunction:UpdateToggle(nil, defT)
-                    end)
+                    TogFunction:UpdateToggle(nil, togDef)
                     return TogFunction
             end
 
             function Elements:NewSlider(argstable)
-                local slidInf = argstable.Name and argstable["Name"] and slidInf or "Slider"
-                local slidTip = argstable.InfoText and argstable["InfoText"] and slidTip or "Slider tip here"
-                local maxvalue = argstable.Max and argstable["Max"] and maxvalue or 500
-                local minvalue = argstable.Min and argstable["Min"] and minvalue or 16
-                local startVal = argstable.Default and argstable["Default"] and startVal or (minvalue + ((maxvalue - minvalue) / 2))
-                local callback = argstable.Function and argstable["Function"] and callback or function() end
+                local slidInf = argstable["Name"] and argstable.Name and slidInf or "Slider"
+                local slidTip = argstable["InfoText"] and argstable.InfoText and slidTip or "Information"
+                local maxvalue = argstable["Max"] and argstable.Max and maxvalue or 100
+                local minvalue = argstable["Min"] and argstable.Min and minvalue or 10
+                local startVal = argstable["Default"] and argstable.Default and startVal or 0
+                local callback = argstable["Function"] and argstable.Function and callback or function() end
                 
-                
+
                 local sliderElement = Instance.new("TextButton")
                 local UICorner = Instance.new("UICorner")
                 local togName = Instance.new("TextLabel")
@@ -1317,7 +1339,8 @@ function Kavo.CreateLib(argstable)
                 sliderDrag.BackgroundColor3 = themeList.SchemeColor
                 sliderDrag.BorderColor3 = Color3.fromRGB(74, 99, 135)
                 sliderDrag.BorderSizePixel = 0
-                
+                sliderDrag.Size = UDim2.new(-0.671140969, 100,1,0)
+
                 UICorner_3.Parent = sliderDrag
 
                 write.Name = "write"
@@ -1370,14 +1393,23 @@ function Kavo.CreateLib(argstable)
                 if themeList.SchemeColor == Color3.fromRGB(0,0,0) then
                     Utility:TweenObject(moreInfo, {TextColor3 = Color3.fromRGB(255,255,255)}, 0.2)
                 end 
-                
-                sliderDrag.Size = UDim2.new(0, (startVal - minvalue) / (maxvalue - minvalue) * 149, 0, 6)
-                val.Text = startVal
-                callback(startVal)
+
 
                                 updateSectionFrame()
                 UpdateSize()
                 
+                spawn(function()
+					if startVal > maxvalue then
+					    startVal = maxvalue
+					end
+					
+					local defaultRatio = (startVal - minvalue) / (maxvalue - minvalue)
+					local sliderDragSize = UDim2.new(defaultRatio, 0, 1, 0)
+					
+					-- Update the sliderDrag size
+					sliderDrag.Size = sliderDragSize
+					
+                end)
                 local mouse = game:GetService("Players").LocalPlayer:GetMouse();
 
                 local ms = game.Players.LocalPlayer:GetMouse()
@@ -1484,12 +1516,12 @@ function Kavo.CreateLib(argstable)
 
             function Elements:NewDropdown(dropname, dropinf, list, callback)
                 local DropFunction = {}
-                local dropname = argstable.Name and argstable["Name"] and dropname or "Dropdown"
-                local list = argstable.List and argstable["List"] and list or {}
-                local dropinf = argstable.InfoText and argstable["InfoText"] and dropinf or "Dropdown info"
-                local dropDef = argstable.Default and argstable["Default"] and dropDef or nil
-                local callback = argstable.Function and argstable["Function"] and callback or function() end   
-
+                local dropname = argstable["Name"] and argstable.Name and dropname or "Dropdown"
+                local list = argstable["List"] and argstable.List and list or nil
+                local dropinf = argstable["InfoText"] and argstable.InfoText and dropinf or "Information"
+                local dropDef = argstable["Default"] and argstable.Default and dropDef or nil
+                local callback = argstable["Function"] and argstable.Function and callback or function() end
+                
                 local opened = false
                 local DropYSize = 33
 
@@ -1790,17 +1822,22 @@ function Kavo.CreateLib(argstable)
     
                     UICorner_2.CornerRadius = UDim.new(0, 4)
                     UICorner_2.Parent = optionSelect
+                    
+                    local selectedValue = dropDef -- Default selected value
 
-					if dropDef then
-					    for i,v in next, list do
-					        if v == dropDef then
-					            itemTextbox.Text = v
-					            callback(v)
-					            break
-					        end
+					-- Modify the dropdown to a single button with the selected value
+					local selectedOption = list[1] -- Example modification
+					for i, option in ipairs(list) do
+					    if option == selectedValue then
+					        selectedOption = option
+					        break
 					    end
 					end
-
+					
+					-- Update the dropdown button text
+					itemTextbox.Text = selectedOption
+                        callback(selectedOption)
+                    
                     local oHover = false
                     optionSelect.MouseEnter:Connect(function()
                         if not focusing then
@@ -1828,7 +1865,7 @@ function Kavo.CreateLib(argstable)
                         end
                     end)()
                 end
-
+     
                 function DropFunction:Refresh(newList)
                     newList = newList or {}
                     for i,v in next, dropFrame:GetChildren() do
@@ -1941,11 +1978,13 @@ function Kavo.CreateLib(argstable)
                 end
                 return DropFunction
             end
-            function Elements:NewKeybind(keytext, keyinf, first, callback)
-            
-                local keytext = argstable.Name and argstable["Name"] and keytext or "KeybindText"
-                local keyinf = argstable.InfoText and argstable["InfoText"] and keyinf or "KebindInfo"
-                local callback = argstable.Function and argstable["Function"] and callback or function() end
+            function Elements:NewKeybind(argstable)
+                
+                local keytext = argstable["Name"] and argstable.Name and keytext or "Keybind"
+                local keyinf = argstable["InfoText"] and argstable.InfoText and keyinf or "Information"
+                local first = argstable["Default"] and argstable.Default and first or nil
+                local callback = argstable["Function"] and argstable.Function and callback or function()
+                
                 local oldKey = first.Name
                 local keybindElement = Instance.new("TextButton")
                 local UICorner = Instance.new("UICorner")
@@ -2155,10 +2194,13 @@ function Kavo.CreateLib(argstable)
                 end)()
             end
 
-            function Elements:NewColorPicker(colText, colInf, defcolor, callback)
-                local colText = argstable.Name and argstable["Name"] and colText or "ColorPicker"
-                local callback = argstable.Function and argstable["Function"] and callback or function() end
-                local defcolor = argstable.Default and argstable["Default"] and defcolor or Color3.fromRGB(1,1,1)
+            function Elements:NewColorPicker(argstable)
+                
+                local colText = argstable["Name"] and argstable.Name and colText or "Colorpicker"
+                local colInf = argstable["InfoText"] and argstable.InfoText and colInf or "Information"
+                local defcolor = argstable["Default"] and argstable.Default and defcolor or Color3.fromRGB(1,1,1)
+                local callback = argstable["Function"] and argstable.Function and callback or function() end
+                
                 local h, s, v = Color3.toHSV(defcolor)
                 local ms = game.Players.LocalPlayer:GetMouse()
                 local colorOpened = false
