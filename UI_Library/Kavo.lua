@@ -13,9 +13,8 @@ local function DraggingEnabled(frame, parent)
     local dragging = false
     local dragInput, mousePos, framePos
 
-    -- Handle mouse input for PC
     frame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             mousePos = input.Position
             framePos = parent.Position
@@ -29,39 +28,11 @@ local function DraggingEnabled(frame, parent)
     end)
 
     frame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
     end)
 
-    -- Handle touch input for mobile
-    local touchInputService = game:GetService("TouchInputService")
-    local touchInput = touchInputService and touchInputService.TouchEnabled
-
-    if touchInput then
-        frame.TouchStarted:Connect(function(touch, processed)
-            if not processed then
-                dragging = true
-                mousePos = touch.Position
-                framePos = parent.Position
-
-                touch.Changed:Connect(function()
-                    if touch.State == Enum.UserInputState.End then
-                        dragging = false
-                    end
-                end)
-            end
-        end)
-
-        frame.TouchMoved:Connect(function(touch, processed)
-            if not processed then
-                local delta = touch.Position - mousePos
-                parent.Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
-            end
-        end)
-    end
-
-    -- Handle input changes for both mouse and touch
     input.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
             local delta = input.Position - mousePos
