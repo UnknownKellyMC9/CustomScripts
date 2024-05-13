@@ -174,7 +174,7 @@ function Kavo:ToggleUI()
     end
 end
 
-function Kavo:CreateWindow(kavName, themeList)
+function Kavo:CreateWindow(argstable)
     local kavName = argstable["Title"] and argstable.Title and kavName or "Kavo's Window"
     local themeList = argstable["Theme"] and argstable.Theme and themeList or "Ocean"
     
@@ -1514,7 +1514,7 @@ function Kavo:CreateWindow(kavName, themeList)
                 end)        
             end
 
-            function Elements:NewDropdown(dropname, dropinf, list, callback)
+            function Elements:NewDropdown(argstable)
                 local DropFunction = {}
                 local dropname = argstable["Name"] and argstable.Name and dropname or "Dropdown"
                 local list = argstable["List"] and argstable.List and list or nil
