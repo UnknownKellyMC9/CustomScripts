@@ -7,7 +7,7 @@ local run = game:GetService("RunService")
 
 local Utility = {}
 local Objects = {}
-local function Kavo:DraggingEnabled(frame, parent)
+local function DraggingEnabled(frame, parent)
     parent = parent or frame
 
     local dragging = false
@@ -241,7 +241,7 @@ function Kavo:CreateWindow(kavName, themeList)
 
     local blurFrame = Instance.new("Frame")
 
-    Kavo:DraggingEnabled(MainHeader, Main)
+    DraggingEnabled(MainHeader, Main)
 
     blurFrame.Name = "blurFrame"
     blurFrame.Parent = pages
