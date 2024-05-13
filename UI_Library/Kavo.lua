@@ -982,9 +982,15 @@ function Kavo:CreateWindow(argstable)
                     local togDef = argstable["Default"] and argstable.Default and togDef or nil
                     local callback = argstable["Function"] and argstable.Function and callback or function() end
                     
-                    local toggled = false
+                    local toggled = togDef
                     table.insert(SettingsT, tname)
-
+                    
+                    spawn(function()
+                        pcall(function()
+                            TogFunction:UpdateToggle(nil, toggled)
+                        end)
+                    end)
+                    
                     local toggleElement = Instance.new("TextButton")
                     local UICorner = Instance.new("UICorner")
                     local toggleDisabled = Instance.new("ImageLabel")
@@ -1223,7 +1229,7 @@ function Kavo:CreateWindow(argstable)
                             pcall(callback, toggled)
                         end
                     end
-                    TogFunction:UpdateToggle(nil, togDef)
+                    
                     return TogFunction
             end
 
